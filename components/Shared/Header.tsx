@@ -6,7 +6,7 @@ const Header = () => {
   return (
     <header className="w-full border-b">
         <div className="wrapper flex items-center justify-between">
-            <div className="w-36 text-5xl font-bold">Personafy.</div>
+            <div className="w-36 text-3xl font-semibold">Personafy.</div>
             <div className="flex w-32 justify-end gap-3 ">
                 <SignedIn>
                     <UserButton afterSignOutUrl="/"/>
