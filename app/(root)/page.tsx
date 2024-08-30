@@ -7,12 +7,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { headerLinks } from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <>
+    <ul>
+      {headerLinks.map((link) => {
+        return ( 
+          <li>
+            <Link href={link.route}>{link.lable}</Link>
+          </li>
+        )
+      })}
+    </ul>
       <section className="bg-primary-50 bg-dotted-pattern bg-contain py-5 md:py-10">
         <div className="wrapper grid gris-cols-1 gap-5 md:grid-cols-2 2xl:gap-0">
           <div className="flex flex-col justify-centergap-8">
