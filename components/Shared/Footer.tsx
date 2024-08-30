@@ -11,7 +11,7 @@ const Footer = () => {
         </Link>
         <p>2024 Personafy. All Rights reserved.</p>
       </div>
-      <p className="text-center p-6">Developed by Sana & Kanha.</p>
+      <p className="text-center p-6">Developed by <link href="https://github.com/sanaa9012"/>Sana & <link href="https://github.com/Kanha-23"/>Kanha.</p>
     </footer>
   );
 };

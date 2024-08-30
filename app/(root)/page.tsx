@@ -50,32 +50,36 @@ export default function Home() {
         </marquee>
         <div className="flex flex-row justify-between">
           <div>
-            <Card className="h-auto p-8 mx-6 rounded-lg">
+            <Card className="h-auto p-4 mx-6 rounded-lg">
               <CardHeader>
                 <CardTitle>Individual</CardTitle>
                 <CardDescription>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et velit ac nisi ultricies euismod. Aenean nisl ipsum, porttitor quis dui ut, auctor ullamcorper justo.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href="/individual" variant="link">make a persona</Link>
+                <Link href="/individual" className="hover:underline">make a persona</Link>
               </CardContent>
-              {/* <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter> */}
             </Card>
           </div>
-          <div><Card className="h-auto p-8 mx-6 rounded-lg">
+          <div><Card className="h-auto p-4 mx-6 rounded-lg">
               <CardHeader>
                 <CardTitle>Organization</CardTitle>
                 <CardDescription>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et velit ac nisi ultricies euismod. Aenean nisl ipsum, porttitor quis dui ut, auctor ullamcorper justo.
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Link href="/organization" variant="link">make a persona</Link>
+                <Link href="/organization" className="hover:underline">make a persona</Link>
               </CardContent>
-              {/* <CardFooter>
-                <p>Card Footer</p>
-              </CardFooter> */}
+            </Card></div>
+            <div><Card className="h-auto p-4 mx-6 rounded-lg">
+              <CardHeader>
+                <CardTitle>User's POV</CardTitle>
+                <CardDescription>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam et velit ac nisi ultricies euismod. Aenean nisl ipsum, porttitor quis dui ut, auctor ullamcorper justo.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Link href="/pov" className="hover:underline" >Get Insights</Link>
+              </CardContent>
             </Card></div>
         </div>
       </section>
