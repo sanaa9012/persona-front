@@ -1,172 +1,190 @@
-import Header from "@/components/Shared/Header";
+"use client";
+import { useState } from 'react';
+import axios from 'axios';
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
+import Link from 'next/link';
 
-const Individual = () => {
+interface ProfileData {
+  firstName: string;
+  lastName: string;
+  summary: string;
+  geoLocationName: string;
+  industryName: string;
+  headline: string;
+  experience: Array<{
+    title: string;
+    company: {
+      name?: string;
+    };
+    timePeriod?: {
+      startDate?: { year?: number };
+      endDate?: { year?: number };
+    };
+    description?: string;
+  }>;
+  education: Array<{
+    schoolName: string;
+    degreeName: string;
+    fieldOfStudy: string;
+    timePeriod: {
+      startDate?: { year?: number };
+      endDate?: { year?: number };
+    };
+  }>;
+  certifications: Array<{
+    authority: string;
+    name: string;
+    url?: string;
+    timePeriod?: {
+      startDate?: { year?: number };
+    };
+  }>;
+  contact_info: {
+    email_address?: string;
+    phone_numbers: string[];
+    websites: string[];
+  };
+}
+
+const Individual: React.FC = () => {
+  const [profileId, setProfileId] = useState<string>('');
+  const [profileData, setProfileData] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchProfileData = async () => {
+    setLoading(true);
+    setError(null); // Clear previous errors
+    setProfileData(null); // Clear previous profile data
+
+    try {
+      const response = await axios.get<ProfileData>('/api/profile', {
+        params: { profile_id: profileId }
+      });
+      setProfileData(response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setError(`Error ${error.response.status}: ${error.response.data.error || 'An unknown error occurred'}`);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <h2 className="h3-bold text-center p-12 underline bg-orange-300">
         Individual
       </h2>
-      <div className=" font-sans ">
+      <div className="font-sans">
         <div className="container mx-auto bg-white p-8 rounded-lg shadow-lg">
           <div className="align-center">
             <Input
               className="p-2 m-10 w-72"
-              type="username"
+              type="text"
               placeholder="Enter LinkedIn Username"
+              value={profileId}
+              onChange={(e) => setProfileId(e.target.value)}
             />
+            <button onClick={fetchProfileData} className="p-2 m-10 bg-blue-500 text-white rounded">
+              Fetch Profile
+            </button>
           </div>
 
-          <div className="flex flex-wrap justify-around mb-8">
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="mb-4">
-                <p>
-                  <strong>Name:</strong> Sample Sally
-                </p>
-                <p>
-                  <strong>Job Title:</strong> HR Associate
-                </p>
-                <p>
-                  <strong>Age:</strong> 35 to 44 years
-                </p>
-                <p>
-                  <strong>Highest Level of Education:</strong> BA in
-                  Communications
-                </p>
-                <p>
-                  <strong>Social Networks:</strong>
-                </p>
-                <ul className="list-disc pl-6 mb-4">
-                  <li>
-                    <Link href="https://www.facebook.com/" />
-                  </li>
-                  <li>
-                    <Link href="https://www.instagram.com/" />
-                  </li>
-                  <li>
-                    <Link href="https://twitter.com/" />
-                  </li>
-                  <li>
-                    <Link href="https://www.linkedin.com/" />
-                  </li>
-                  <li>
-                    <Link href="https://www.pinterest.com/" />
-                  </li>
-                </ul>
-                <p>
-                  <strong>Industry:</strong> Finance
-                </p>
-              </div>
+          {loading && (
+            <div className="text-center">
+              <p className="text-gray-500">Loading...</p>
             </div>
+          )}
 
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">Job Responsibilities</div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>Hire or refer qualified candidates</li>
-                  <li>Conduct new employee orientations</li>
-                </ul>
-              </div>
+          {error && (
+            <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-8">
+              <p>{error}</p>
             </div>
+          )}
 
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">Certifications</div>
-              <div>
-                <ul>
-                  <li>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    facere, minima enim nisi!
-                  </li>
-                  <li>
-                    Atque nesciunt ex eum error aperiam id accusamus fugit rem
-                    incidunt, libero natus architecto provident adipisci iusto
-                    commodi
-                  </li>
-                </ul>
+          {profileData && !loading && !error && (
+            <div>
+              <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                <p><strong>Name:</strong> {profileData.firstName} {profileData.lastName}</p>
+                <p><strong>Summary:</strong> {profileData.summary}</p>
+                <p><strong>Location:</strong> {profileData.geoLocationName}</p>
+                <p><strong>Industry:</strong> {profileData.industryName}</p>
+                <p><strong>Headline:</strong> {profileData.headline}</p>
               </div>
-            </div>
-          </div>
 
-          <div className="flex flex-wrap justify-around mb-8">
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">
-                Tools They Need to Do Their Job
-              </div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>BambooHR</li>
-                  <li>Greenhouse</li>
-                  <li>Slack</li>
-                  <li>Trello</li>
-                </ul>
-              </div>
-            </div>
+              {profileData.experience.length > 0 && (
+                <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                  <h3 className="text-lg font-bold mb-4">Experience</h3>
+                  <ul>
+                    {profileData.experience.map((exp, index) => (
+                      <li key={index}>
+                        <p><strong>Title:</strong> {exp.title}</p>
+                        <p><strong>Company:</strong> {exp.company?.name || 'N/A'}</p>
+                        <p><strong>Time Period:</strong> {exp.timePeriod?.startDate?.year} - {exp.timePeriod?.endDate?.year}</p>
+                        <p><strong>Description:</strong> {exp.description || 'N/A'}</p>
+                        <hr className="my-2" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">Goals or Objectives</div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>
-                    Increase the percentage of active open positions filled
-                    within the targeted deadline.
-                  </li>
-                  <li>Maintain the employee retention rate above 75%.</li>
-                </ul>
-              </div>
-            </div>
+              {profileData.education.length > 0 && (
+                <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                  <h3 className="text-lg font-bold mb-4">Education</h3>
+                  <ul>
+                    {profileData.education.map((edu, index) => (
+                      <li key={index}>
+                        <p><strong>School:</strong> {edu.schoolName}</p>
+                        <p><strong>Degree:</strong> {edu.degreeName}</p>
+                        <p><strong>Field of Study:</strong> {edu.fieldOfStudy}</p>
+                        <p><strong>Years:</strong> {edu.timePeriod?.startDate?.year} - {edu.timePeriod?.endDate?.year}</p>
+                        <hr className="my-2" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">
-                Their Job Is Measured By
-              </div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>Talent Acquisition</li>
-                  <li>Talent Development</li>
-                  <li>Performance Management</li>
-                </ul>
-              </div>
-            </div>
-          </div>
+              {profileData.certifications.length > 0 && (
+                <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                  <h3 className="text-lg font-bold mb-4">Certifications</h3>
+                  <ul>
+                    {profileData.certifications.map((cert, index) => (
+                      <li key={index}>
+                        <p><strong>Authority:</strong> {cert.authority}</p>
+                        <p><strong>Certification:</strong> {cert.name}</p>
+                        {cert.url && <p><strong>URL:</strong> <Link href={cert.url}>{cert.url}</Link></p>}
+                        <p><strong>Time Period:</strong> {cert.timePeriod?.startDate?.year}</p>
+                        <hr className="my-2" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-          <div className="flex flex-wrap justify-around mb-8">
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">
-                They Gain Information By
-              </div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>Reading blog posts</li>
-                  <li>Receiving industry email newsletters</li>
-                  <li>Social media</li>
-                </ul>
-              </div>
+              {profileData.contact_info && (
+                <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                  <h3 className="text-lg font-bold mb-4">Contact Information</h3>
+                  <p><strong>Email:</strong> {profileData.contact_info.email_address || 'N/A'}</p>
+                  <p><strong>Phone Numbers:</strong> {profileData.contact_info.phone_numbers.join(', ') || 'N/A'}</p>
+                  {profileData.contact_info.websites.length > 0 && (
+                    <div>
+                      <strong>Websites:</strong>
+                      <ul>
+                        {profileData.contact_info.websites.map((website, index) => (
+                          <li key={index}><Link href={website}>{website}</Link></li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
-
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">Biggest Challenges</div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>Compliance</li>
-                  <li>Management changes</li>
-                  <li>Workforce training and development</li>
-                  <li>Adapting to innovation</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">
-                Preferred Method of Communication
-              </div>
-              <div>
-                <p>Email and Social Media (FB, Twitter, and LinkedIn)</p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
