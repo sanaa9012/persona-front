@@ -12,7 +12,7 @@ def safe_text(text):
 
 def get_profile_data(profile_id):
     # Authenticate using LinkedIn account credentials
-    api = Linkedin("9313972238", "Mitul@9824535467")
+    api = Linkedin("9104396556", "0258sana")
 
     # GET a profile
     profile = api.get_profile(profile_id)

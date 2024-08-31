@@ -18,7 +18,7 @@ def safe_text(text):
 def print_company_info(company_name):
     try:
         # Authenticate using LinkedIn account credentials
-        api = Linkedin("9313972238", "Mitul@9824535467")
+        api = Linkedin("9104396556", "0258sana")
 
         # GET company information
         company = api.get_company(company_name)
