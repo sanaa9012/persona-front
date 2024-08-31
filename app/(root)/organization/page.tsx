@@ -1,170 +1,182 @@
-import Link from "next/link";
-import React from "react";
-import { Input } from "@/components/ui/input"
+"use client"
+import { useState } from 'react';
+import axios from 'axios';
+import { Input } from "@/components/ui/input";
+import Link from 'next/link';
 
-const Organization = () => {
+interface Location {
+  country: string;
+  state: string;
+  city: string;
+  postalCode: string;
+  address: string;
+  description: string;
+  headquarters: boolean;
+}
+
+interface CompanyInfo {
+  title: string;
+  rating: string;
+  address: string;
+  website?: string;
+  phone?: string;
+  reviews: string[];
+  linkedinUrl?: string;
+  linkedinId?: string;
+  linkedinCompanyInfo: {
+    name: string;
+    staffCount: string;
+    companyPageUrl?: string;
+    companyEmployeesSearchPageUrl?: string;
+    confirmedLocations: Location[];
+    followerCount: string;
+    description: string;
+    universalName: string;
+    jobSearchPageUrl?: string;
+    paidCompany: string;
+    tagline: string;
+  };
+}
+
+interface ApiResponse {
+  companyInfo: CompanyInfo;
+}
+
+const CompanyInfo: React.FC = () => {
+  const [companyName, setCompanyName] = useState<string>('');
+  const [companyData, setCompanyData] = useState<ApiResponse | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCompanyData = async () => {
+    setLoading(true);
+    setError(null);
+    setCompanyData(null);
+
+    try {
+      const response = await axios.get<ApiResponse>('/api/organization', {
+        params: { companyName: companyName }
+      });
+      setCompanyData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        setError(`Error ${error.response.status}: ${error.response.data.error || 'An unknown error occurred'}`);
+      } else {
+        setError('An unknown error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <h2 className="h3-bold text-center p-12 underline bg-orange-300">
-        Organizational
+        Company Information
       </h2>
-      <div className=" font-sans ">
+      <div className="font-sans">
         <div className="container mx-auto bg-white p-8 rounded-lg shadow-lg">
-          <div className="align-center"><Input className="p-2 m-10 w-72" type="username" placeholder="Enter Organization's LinkedIn Username" /></div>
-          <div className="flex flex-wrap justify-around mb-8">
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="mb-4">
-                <p>
-                  <strong>Name:</strong> Sample Sally
-                </p>
-                <p>
-                  <strong>Job Title:</strong> HR Associate
-                </p>
-                <p>
-                  <strong>Age:</strong> 35 to 44 years
-                </p>
-                <p>
-                  <strong>Highest Level of Education:</strong> BA in
-                  Communications
-                </p>
-                <p>
-                  <strong>Social Networks:</strong>
-                </p>
-                <ul className="list-disc pl-6 mb-4">
-                  <li>
-                    <Link href="https://www.facebook.com/" />
-                  </li>
-                  <li>
-                    <Link href="https://www.instagram.com/" />
-                  </li>
-                  <li>
-                    <Link href="https://twitter.com/" />
-                  </li>
-                  <li>
-                    <Link href="https://www.linkedin.com/" />
-                  </li>
-                  <li>
-                    <Link href="https://www.pinterest.com/" />
-                  </li>
-                </ul>
-                <p>
-                  <strong>Industry:</strong> Finance
-                </p>
-                <p>
-                  <strong>Organization Size:</strong> 1001-5000 employees
-                </p>
-              </div>
-            </div>
+          <div className="align-center">
+            <Input
+              className="p-2 m-10 w-72"
+              type="text"
+              placeholder="Enter Company Name"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+            />
+            <button onClick={fetchCompanyData} className="p-2 m-10 bg-blue-500 text-white rounded">
+              Fetch Company Info
+            </button>
+          </div>
 
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">Job Responsibilities</div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>Hire or refer qualified candidates</li>
-                  <li>Conduct new employee orientations</li>
-                </ul>
-              </div>
+          {loading && (
+            <div className="text-center">
+              <p className="text-gray-500">Loading...</p>
             </div>
+          )}
 
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">Certifications</div>
-              <div>
+          {error && (
+            <div className="bg-red-100 text-red-800 p-4 rounded-lg mb-8">
+              <p>{error}</p>
+            </div>
+          )}
+
+          {companyData && !loading && !error && (
+            <div>
+              <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                <p><strong>Name:</strong> {companyData.companyInfo.title}</p>
+                <p><strong>Rating:</strong> {companyData.companyInfo.rating}</p>
+                <p><strong>Address:</strong> {companyData.companyInfo.address}</p>
+                {companyData.companyInfo.website && (
+                  <p><strong>Website:</strong> <Link href={companyData.companyInfo.website}>{companyData.companyInfo.website}</Link></p>
+                )}
+                {companyData.companyInfo.phone && (
+                  <p><strong>Phone Number:</strong> {companyData.companyInfo.phone}</p>
+                )}
+              </div>
+
+              {/* Uncomment this section if you want to display reviews */}
+              {/* 
+              <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                <h3 className="text-lg font-bold mb-4">Reviews</h3>
                 <ul>
-                  <li>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                    facere, minima enim nisi!
-                  </li>
-                  <li>
-                    Atque nesciunt ex eum error aperiam id accusamus fugit rem
-                    incidunt, libero natus architecto provident adipisci iusto
-                    commodi
-                  </li>
+                  {companyData.companyInfo.reviews.map((review, index) => (
+                    <li key={index} className="mb-2">
+                      <p>{review}</p>
+                      <hr className="my-2" />
+                    </li>
+                  ))}
                 </ul>
-              </div>
-            </div>
-          </div>
+              </div> 
+              */}
 
-          <div className="flex flex-wrap justify-around mb-8">
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">
-                Tools They Need to Do Their Job
+              <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                <p><strong>LinkedIn URL:</strong> {companyData.companyInfo.linkedinUrl ? <Link href={companyData.companyInfo.linkedinUrl}>{companyData.companyInfo.linkedinUrl}</Link> : 'N/A'}</p>
+                <p><strong>LinkedIn ID:</strong> {companyData.companyInfo.linkedinId || 'N/A'}</p>
+                <p><strong>Staff Count:</strong> {companyData.companyInfo.linkedinCompanyInfo.staffCount || 'N/A'}</p>
+                {companyData.companyInfo.linkedinCompanyInfo.companyPageUrl && (
+                  <p><strong>Company Page URL:</strong> <Link href={companyData.companyInfo.linkedinCompanyInfo.companyPageUrl}>{companyData.companyInfo.linkedinCompanyInfo.companyPageUrl}</Link></p>
+                )}
+                {companyData.companyInfo.linkedinCompanyInfo.companyEmployeesSearchPageUrl && (
+                  <p><strong>Employees Search Page URL:</strong> <Link href={companyData.companyInfo.linkedinCompanyInfo.companyEmployeesSearchPageUrl}>{companyData.companyInfo.linkedinCompanyInfo.companyEmployeesSearchPageUrl}</Link></p>
+                )}
+                <p><strong>Follower Count:</strong> {companyData.companyInfo.linkedinCompanyInfo.followerCount}</p>
+                <p><strong>Description:</strong> {companyData.companyInfo.linkedinCompanyInfo.description}</p>
+                <p><strong>Universal Name:</strong> {companyData.companyInfo.linkedinCompanyInfo.universalName}</p>
+                {companyData.companyInfo.linkedinCompanyInfo.jobSearchPageUrl && (
+                  <p><strong>Job Search Page URL:</strong> <Link href={companyData.companyInfo.linkedinCompanyInfo.jobSearchPageUrl}>{companyData.companyInfo.linkedinCompanyInfo.jobSearchPageUrl}</Link></p>
+                )}
+                <p><strong>Paid Company Status:</strong> {companyData.companyInfo.linkedinCompanyInfo.paidCompany}</p>
+                <p><strong>Tagline:</strong> {companyData.companyInfo.linkedinCompanyInfo.tagline}</p>
               </div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>BambooHR</li>
-                  <li>Greenhouse</li>
-                  <li>Slack</li>
-                  <li>Trello</li>
-                </ul>
-              </div>
-            </div>
 
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">Goals or Objectives</div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>
-                    Increase the percentage of active open positions filled
-                    within the targeted deadline.
-                  </li>
-                  <li>Maintain the employee retention rate above 75%.</li>
-                </ul>
-              </div>
-            </div>
+              {companyData.companyInfo.linkedinCompanyInfo.confirmedLocations && Array.isArray(companyData.companyInfo.linkedinCompanyInfo.confirmedLocations) && companyData.companyInfo.linkedinCompanyInfo.confirmedLocations.length > 0 && (
+                <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8">
+                  <h3 className="text-lg font-bold mb-4">Confirmed Locations</h3>
+                  <ul>
+                    {companyData.companyInfo.linkedinCompanyInfo.confirmedLocations.map((loc, index) => (
+                      <li key={index} className="mb-2">
+                        <p><strong>Country:</strong> {loc.country}</p>
+                        <p><strong>State/Area:</strong> {loc.state}</p>
+                        <p><strong>City:</strong> {loc.city}</p>
+                        <p><strong>Postal Code:</strong> {loc.postalCode}</p>
+                        <p><strong>Address:</strong> {loc.address}</p>
+                        <p><strong>Description:</strong> {loc.description}</p>
+                        <p><strong>Headquarters:</strong> {loc.headquarters ? 'Yes' : 'No'}</p>
+                        <hr className="my-2" />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">
-                Their Job Is Measured By
-              </div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>Talent Acquisition</li>
-                  <li>Talent Development</li>
-                  <li>Performance Management</li>
-                </ul>
-              </div>
             </div>
-          </div>
-
-          <div className="flex flex-wrap justify-around mb-8">
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">
-                They Gain Information By
-              </div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>Reading blog posts</li>
-                  <li>Receiving industry email newsletters</li>
-                  <li>Social media</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">Biggest Challenges</div>
-              <div>
-                <ul className="list-disc pl-6">
-                  <li>Compliance</li>
-                  <li>Management changes</li>
-                  <li>Workforce training and development</li>
-                  <li>Adapting to innovation</li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="bg-gray-100 p-6 rounded-lg shadow-md w-64 mb-8">
-              <div className="text-lg font-bold mb-4">
-                Preferred Method of Communication
-              </div>
-              <div>
-                <p>Email and Social Media (FB, Twitter, and LinkedIn)</p>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
-export default Organization;
+export default CompanyInfo;
