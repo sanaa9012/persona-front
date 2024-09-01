@@ -55,7 +55,7 @@ export default function Home() {
       >
         <marquee behavior="scroll" direction="left">
           <h3 className="h3-bold text-orange-300 text-pretty">
-            Trusted by thousands of organizations.
+            Trusted by thousands of organizations!
           </h3>
         </marquee>
         <div className="flex flex-row justify-between">
